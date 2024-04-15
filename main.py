@@ -1,36 +1,41 @@
-import RPi.GPIO as GPIO
-import time
-from classes import Servo
+import pigpio
+from gpiozero import Servo
+from time import sleep
+
+PINS : list[int | None] = [None, None, None, None]
+
+SERVO_MIN_PW = 1
+SERVO_MAX_PW = 2
 
 
-if __name__ == '__main__':
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(False)
+def set_servo_angle(servo: Servo, angle: int):
+    angle = 0 if angle < 0 else 180 if angle > 180 else angle
+    servo.value = (angle / 180) * (SERVO_MAX_PW - SERVO_MIN_PW) + SERVO_MIN_PW
 
-    servo1 = Servo(18)
 
-    time.sleep(0.5)
-
-    try:
-        while True:
-            user_cmd = input('')
-
-            cmds = {
-                'a': -90, 
-                'q': -45, 
-                's':0,
-                'd': 90, 
-                'e': 45, 
-            }
-
-            degrees = cmds.get(user_cmd)
-
-            if degrees is not None:
-                servo1.set_duty_cycle(degrees)
-                time.sleep(1)
-
-    except KeyboardInterrupt:
-        GPIO.cleanup()
+def main() -> None:
+    servos: list[Servo] = [Servo(pin) for pin in PINS]
+    pi: pigpio.pi = pigpio.pi()
     
+    try:
+        for servo in servos:
+            set_servo_angle(servo=servo, angle=90)
+        
+        sleep(0.5)
+        
+        for servo in servos:
+            set_servo_angle(servo=servo, angle=0)
+            
+        sleep(0.5)
+        
+        for servo in servos:
+            set_servo_angle(servo=servo, angle=180)
+        
     except Exception:
-        GPIO.cleanup()
+        for servo in servos:
+            servo.close()
+        
+    
+if __name__ == '__main__':
+    main()
+    
