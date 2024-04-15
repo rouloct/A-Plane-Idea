@@ -6,7 +6,7 @@ from classes import Servo
 if __name__ == '__main__':
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
-
+    print("HI RORY!!!!")
     servo1 = Servo(18)
 
     time.sleep(0.5)
