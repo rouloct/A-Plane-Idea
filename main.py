@@ -2,7 +2,8 @@ import pigpio
 from gpiozero import Servo
 from time import sleep
 
-PINS : list[int | None] = [None, None, None, None]
+# Edit this list with the servos
+PINS = [None, None, None, None]
 
 SERVO_MIN_PW = 1
 SERVO_MAX_PW = 2
