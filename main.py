@@ -1,51 +1,36 @@
 import pigpio
-from gpiozero import Servo
-from time import sleep
+import traceback
+from global_vars import PI
+from helper_methods import set_servo_angle
 
-# Edit this list with the servos
-PINS = [8, None, None, None]
-
-SERVO_MIN_PW = 1000 # In microseconds
-SERVO_MAX_PW = 2000
-
-
-def set_servo_angle(servo: Servo, angle: int) -> None:
-    angle = 0 if angle < 0 else 180 if angle > 180 else angle
-    servo.value = (angle / 180) * (SERVO_MAX_PW - SERVO_MIN_PW) + SERVO_MIN_PW
-    print(servo.value)
+# Add pin numbers here. Pigpio uses BCM setup instead of Board.
+PINS : list[int] = [15]
 
 
 def main() -> None:
-    servos: list[Servo] = [Servo(pin) for pin in PINS if pin is not None]
-    pi: pigpio.pi = pigpio.pi()
+    """ Main execution block for program.
     
-    try:
-        for servo in servos:
-            print(1)
-            set_servo_angle(servo=servo, angle=90)
-            
-        
-        sleep(0.5)
-        
-        for servo in servos:
-            print(2)
-            
-            set_servo_angle(servo=servo, angle=0)
-            
-        sleep(0.5)
-        
-        for servo in servos:
-            print(3)
-            
-            set_servo_angle(servo=servo, angle=180)
-        
-    except Exception as e:
-        print("EXCEPTION: ")
-        print(e)
-        for servo in servos:
-            servo.close()
-        
+    Exceptions are handled in if __name__ == '__main__' instead to reduce nesting and improve readability.
+    """
     
+    for pin in PINS:
+        PI.set_mode(gpio=pin, mode=pigpio.OUTPUT)
+        set_servo_angle(pin=pin, angle=0)
+    
+
 if __name__ == '__main__':
-    main()
+
+    try:
+        PI = pigpio.pi()
+        main()
+        
+    except KeyboardInterrupt:
+        print("\nKeyboard interrupt detected.")
     
+    except Exception:
+        traceback.print_exc()
+        
+    finally:
+        print("Exiting program...")
+        PI.stop()
+        exit()
