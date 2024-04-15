@@ -3,7 +3,7 @@ from gpiozero import Servo
 from time import sleep
 
 # Edit this list with the servos
-PINS = [None, None, None, None]
+PINS = [8, None, None, None]
 
 SERVO_MIN_PW = 1
 SERVO_MAX_PW = 2
@@ -15,7 +15,7 @@ def set_servo_angle(servo: Servo, angle: int):
 
 
 def main() -> None:
-    servos: list[Servo] = [Servo(pin) for pin in PINS]
+    servos: list[Servo] = [Servo(pin) for pin in PINS if pin is not None]
     pi: pigpio.pi = pigpio.pi()
     
     try:
