@@ -1,4 +1,5 @@
-from global_vars import PI
+from global_vars import pi
+import pigpio
 
 
 def angle_to_pw(angle: int) -> int:
@@ -23,12 +24,26 @@ def angle_to_pw(angle: int) -> int:
 
 
 def set_servo_angle(pin: int, angle: int) -> None:
-    """ Set the angle of a servos.
+    """ Set the angle of a servo.
 
     Args:
-        pin (int): The gpio pin (using BCM)
+        pin (int): The GPIO pin (using BCM)
         angle (int): The angle between -90 (left) and 90 (right)
     """
     
-    PI.set_servo_pulsewidth(user_gpio=pin, pulsewidth=angle_to_pw(angle=angle))
-    print(f"Setting pin {pin} to {angle} degrees.")
+    pulse_width = angle_to_pw(angle)
+    pi.set_servo_pulsewidth(user_gpio=pin, pulsewidth=pulse_width)
+    print(f"Setting pin {pin} to {angle} degrees (pulsewidth={pulse_width}).")
+
+
+def init_servo(pin: int) -> None:
+    """ Setup a GPIO pin for input and set its angle to 0 degrees.
+
+    Args:
+        pin (int): The GPIO pin (using BCM)
+    """
+    
+    print(f"Initializing GPIO pin {pin} for output.")
+    pi.set_mode(gpio=pin, mode=pigpio.OUTPUT)
+    set_servo_angle(pin=pin, angle=0)
+    

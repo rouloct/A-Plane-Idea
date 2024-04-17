@@ -1,3 +1,4 @@
 import pigpio
 
-PI = pigpio.pi() # Overridden in main.py 
+pi = pigpio.pi() # Overridden in main.py once
+start_tick = None # Overridden in input_methods.py in callback method.

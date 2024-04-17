@@ -1,27 +1,28 @@
 import pigpio
 import traceback
-from global_vars import PI
-from helper_methods import set_servo_angle
+from global_vars import pi
+from servo_methods import init_servo
+from input_methods import init_input
 
 # Add pin numbers here. Pigpio uses BCM setup instead of Board.
 PINS : list[int] = [15]
 
+INPUT_PIN : int = None
+
 
 def main() -> None:
-    """ Main execution block for program.
+    global pi
     
-    Exceptions are handled in if __name__ == '__main__' instead to reduce nesting and improve readability.
-    """
-    
-    for pin in PINS:
-        PI.set_mode(gpio=pin, mode=pigpio.OUTPUT)
-        set_servo_angle(pin=pin, angle=0)
-    
-
-if __name__ == '__main__':
     try:
-        PI = pigpio.pi()
-        main()
+        pi = pigpio.pi()
+        
+        for pin in PINS:
+            init_servo(pin=pin)
+        
+        if INPUT_PIN:
+            callback = init_input(INPUT_PIN)
+            input("Press any key to stop...") # Keep program running.
+        
         
     except KeyboardInterrupt:
         print("\nKeyboard interrupt detected.")
@@ -31,5 +32,11 @@ if __name__ == '__main__':
         
     finally:
         print("Exiting program...")
-        PI.stop()
+        callback.cancel()
+        pi.stop()
         exit()
+
+    
+
+if __name__ == '__main__':
+    main()
