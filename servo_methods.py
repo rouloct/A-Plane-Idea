@@ -33,7 +33,7 @@ def set_servo_angle(pin: int, angle: int) -> None:
     
     pulse_width = angle_to_pw(angle)
     pi.set_servo_pulsewidth(user_gpio=pin, pulsewidth=pulse_width)
-    print(f"Setting pin {pin} to {angle} degrees (pulsewidth={pulse_width}).")
+    print(f"Setting pin {pin} to {angle} degrees via pulse width of {pulse_width:.0f}us.")
 
 
 def init_servo(pin: int) -> None:
@@ -43,7 +43,7 @@ def init_servo(pin: int) -> None:
         pin (int): The GPIO pin (using BCM)
     """
     
-    print(f"Initializing GPIO pin {pin} for output.")
-    pi.set_mode(gpio=pin, mode=pigpio.OUTPUT)
+    print(f"Initializing GPIO pin {pin} for input...")
+    pi.set_mode(gpio=pin, mode=pigpio.INPUT)
     set_servo_angle(pin=pin, angle=0)
     

@@ -13,6 +13,8 @@ INPUT_PIN : int = None
 def main() -> None:
     global pi
     
+    callback = None
+    
     try:
         pi = pigpio.pi()
         
@@ -32,7 +34,8 @@ def main() -> None:
         
     finally:
         print("Exiting program...")
-        callback.cancel()
+        if callback:
+            callback.cancel()
         pi.stop()
         exit()
 
