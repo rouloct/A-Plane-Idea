@@ -19,7 +19,6 @@ def main() -> None:
     
 
 if __name__ == '__main__':
-
     try:
         PI = pigpio.pi()
         main()
