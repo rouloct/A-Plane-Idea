@@ -25,7 +25,6 @@ def main() -> None:
             callback = init_input(INPUT_PIN)
             input("Press any key to stop...") # Keep program running.
         
-        
     except KeyboardInterrupt:
         print("\nKeyboard interrupt detected.")
     
@@ -39,7 +38,6 @@ def main() -> None:
         pi.stop()
         exit()
 
-    
 
 if __name__ == '__main__':
     main()
