@@ -14,7 +14,8 @@ class Servo:
         self.name = name if name is not None else "Unnamed"
         self._pin = None
         
-        if pin is not None or pin is not type(int) or not (1 <= pin <= 31):
+        if pin is None or type(pin) is not int or not (1 <= pin <= 31):
+            print(pin)
             print(f"Error: {self} initialization failed - Invalid pin: {pin}")
             return
 
@@ -25,6 +26,7 @@ class Servo:
         else:
             print(f"{self} initialized on pin {pin}.")
             self._pin = pin
+            self.set_servo_angle(0)
             
     
     def set_servo_angle(self, angle: int) -> None:
@@ -38,7 +40,7 @@ class Servo:
             print(f"Error: Cannot set angle on {self} - No pin found.")
             return
         
-        if angle is not type(int) or -90 <= angle <= 90:
+        if type(angle) is not int or not (-90 <= angle <= 90):
             print(f"Error: Cannot set angle on {self} - Invalid angle: {angle}")
             return
 
@@ -56,5 +58,5 @@ class Servo:
             print(f"Error: Setting {self} to {angle} degrees via pulse width of {pulse_width:.0f}us failed - Unknown error.")
 
 
-        def __str__(self) -> str:
-            return f"Servo [{self.name}, {self._pin}]" if self._pin is not None else f"Servo [{self.name}]"
+    def __str__(self) -> str:
+        return f"Servo [{self.name}, {self._pin}]" if self._pin is not None else f"Servo [{self.name}]"

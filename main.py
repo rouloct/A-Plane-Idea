@@ -15,10 +15,11 @@ def main() -> None:
     try:
         pi = pigpio.pi()
         
-        Servo(pi, name="Aileron 1", pin=AIL1_INPUT_PIN)
-        Input(pi, name="Aileron 1", pin=23)
+        ail1 = Servo(pi, name="Aileron 1", pin=AIL1_SERVO_PIN)
+            
+        Input(pi, name="Aileron 1", pin=AIL1_INPUT_PIN)
         
-        input("Program running... Press ENTER to stop.")
+        input("Program running... Press ENTER to stop ")
         
     except KeyboardInterrupt:
         print("\nKeyboard interrupt detected. ", end='')
@@ -27,7 +28,7 @@ def main() -> None:
         traceback.print_exc()
         
     finally:
-        print("Exiting program...")
+        print("Exiting program.")
  
         pi.stop()
         exit()

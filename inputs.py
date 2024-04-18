@@ -19,7 +19,7 @@ class Input:
         self._servo = servo
         self._start_tick = None
                 
-        if pin is not None or pin is not type(int) or not (1 <= pin <= 31):
+        if pin is None or type(pin) is not int or not (1 <= pin <= 31):
             print(f"Error: {self} initialization failed - Invalid pin: {pin}")
             return
 
