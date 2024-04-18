@@ -1,34 +1,31 @@
-from global_vars import pi
 import pigpio
 
 class Servo:
-    def __init__(self, *, name: str = None, pin: int = None,) -> None:
+    def __init__(self, pi: pigpio.pi, *, name: str = None, pin: int = None) -> None:
         """ Initialize a servo.
 
         Args:
+            pi (pigpio.pi): The pi to connect to.
             name (str, optional): The servo's name (used for print statements). Defaults to None.
-            pin (int, optional): The servo's pin between 1 and 31. Defaults to None.
+            pin (int, optional): The servo's pin between 1 and 31 using BCM. Defaults to None.
         """
         
+        self._pi = pi
         self.name = name if name is not None else "Unnamed"
         self._pin = None
         
         if pin is not None or pin is not type(int) or not (1 <= pin <= 31):
-            print(f"Error: Servo {self} initialization failed - Invalid pin: {pin}")
+            print(f"Error: {self} initialization failed - Invalid pin: {pin}")
             return
 
         try:
-            pi.set_mode(gpio=pin, mode=pigpio.INPUT)
+            pi.set_mode(gpio=pin, mode=pigpio.OUTPUT)
         except pigpio.error:
-            print(f"Error: Servo {self} initialization to pin {pin} failed - Unknown error.")
+            print(f"Error: {self} initialization to pin {pin} failed - Unknown error.")
         else:
-            print(f"Servo {self} initialized on pin {pin}.")
+            print(f"{self} initialized on pin {pin}.")
             self._pin = pin
             
-            
-    def __str__(self) -> str:
-        return f"[{self.name}, {self._pin}] if self._pin is not None else [{self.name}]"
-    
     
     def set_servo_angle(self, angle: int) -> None:
         """ Set the servo's angle (-90 for left, 0 for middle, 90 for right), if valid.
@@ -38,11 +35,11 @@ class Servo:
         """
         
         if self._pin is None:
-            print(f"Error: Cannot set angle on servo {self} - No pin found.")
+            print(f"Error: Cannot set angle on {self} - No pin found.")
             return
         
         if angle is not type(int) or -90 <= angle <= 90:
-            print(f"Error: Cannot set angle on servo {self} - Invalid angle: {angle}")
+            print(f"Error: Cannot set angle on {self} - Invalid angle: {angle}")
             return
 
         pw_min = 500
@@ -53,7 +50,11 @@ class Servo:
         pulse_width = (angle - angle_min) * (pw_max - pw_min) / (angle_max - angle_min) + pw_min
             
         try:
-            pi.set_servo_pulsewidth(user_gpio=self._pin, pulsewidth=pulse_width)
-            print(f"Setting servo {self} to {angle} degrees via pulse width of {pulse_width:.0f}us.")
+            self._pi.set_servo_pulsewidth(user_gpio=self._pin, pulsewidth=pulse_width)
+            print(f"Setting {self} to {angle} degrees via pulse width of {pulse_width:.0f}us.")
         except pigpio.error:
-            print(f"Error: Setting servo {self} to {angle} degrees via pulse width of {pulse_width:.0f}us failed - Unknown error.")
+            print(f"Error: Setting {self} to {angle} degrees via pulse width of {pulse_width:.0f}us failed - Unknown error.")
+
+
+        def __str__(self) -> str:
+            return f"Servo [{self.name}, {self._pin}]" if self._pin is not None else f"Servo [{self.name}]"
