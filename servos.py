@@ -20,12 +20,14 @@ class Servo:
             return
 
         try:
-            pi.set_mode(gpio=pin, mode=pigpio.OUTPUT)
+            # Set pin's mode to output
+            pi.set_mode(gpio=pin, mode=pigpio.OUTPUT) 
         except pigpio.error:
             print(f"Error: {self} initialization to pin {pin} failed - Unknown error.")
         else:
             print(f"{self} initialized on pin {pin}.")
             self._pin = pin
+            # Set pin's angle to center.
             self.set_servo_value(value=0, is_angle=True)
             
     

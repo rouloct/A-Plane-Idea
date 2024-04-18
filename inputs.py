@@ -24,8 +24,10 @@ class Input:
             return
 
         try:
-            pi.set_mode(pin, pigpio.INPUT)
-            pi.callback(pin, pigpio.EITHER_EDGE, self._input_callback)
+            # Set pin to "Input" mode
+            pi.set_mode(pin, pigpio.INPUT) 
+            # Set callback to the method, calls it everytime the input pin receives PWM signal from the pin
+            pi.callback(pin, pigpio.EITHER_EDGE, self._input_callback) 
         except pigpio.error:
             print(f"Error: {self} initialization to pin {pin} failed - Unknown error.")
         else:
@@ -34,11 +36,11 @@ class Input:
 
 
     def _input_callback(self, pin: int, level: int, tick: float) -> None:
-        """ Callback function for reading PWM input.
+        """ Callback function for reading PWM input. Called when PWM signal is received.
 
         Args:
             pin (int): The pin number using BCM.
-            level (int): ?
+            level (int): ? 
             tick (float): ?
         """
         
@@ -51,6 +53,13 @@ class Input:
             
             
     def _manage_servo(self, pulse_width: int) -> None:
+        """ Code to manage the servo. Called by self._input_callback when PWM signal is received. 
+        
+        Separate function is used for clarity and readibility.
+
+        Args:
+            pulse_width (int): The pulse width received.
+        """
         if self._servo:
             self._servo.set_servo_value(value=pulse_width, is_angle=False)
     
