@@ -4,9 +4,11 @@ from servos import Servo
 from inputs import Input
 
 # Add pin numbers here. Pigpio uses BCM setup instead of Board.
-AIL1_SERVO_PIN = 15
+AIL_SERVO_PIN = 15
+AIL_INPUT_PIN = 21
 
-AIL1_INPUT_PIN = 21
+ELE_SERVO_PIN = 18
+ELE_INPUT_PIN = 16
 
 
 def main() -> None:
@@ -14,9 +16,13 @@ def main() -> None:
     try:
         pi = pigpio.pi()
         
-        ail1 = Servo(pi, name="Aileron 1", pin=AIL1_SERVO_PIN)
+        aileron = Servo(pi, name="Aileron", pin=AIL_SERVO_PIN)
                     
-        Input(pi, name="Aileron 1", pin=AIL1_INPUT_PIN, servo=ail1)
+        Input(pi, name="Aileron", pin=AIL_INPUT_PIN, servo=aileron)
+        
+        elevator = Servo(pi, name="Elevator", pin=ELE_SERVO_PIN)
+        
+        Input(pi, name="Elevator", pin=ELE_INPUT_PIN, servo=elevator)
         
         input("Program running... Press ENTER to stop ")
         
