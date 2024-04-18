@@ -1,13 +1,12 @@
 import pigpio
 import traceback
-from global_vars import pi
 from servos import Servo
 from inputs import Input
 
 # Add pin numbers here. Pigpio uses BCM setup instead of Board.
 AIL1_SERVO_PIN = 15
 
-AIL1_INPUT_PIN : int = 23
+AIL1_INPUT_PIN = 23
 
 
 def main() -> None:
