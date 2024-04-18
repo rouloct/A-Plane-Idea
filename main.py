@@ -6,7 +6,7 @@ from inputs import Input
 # Add pin numbers here. Pigpio uses BCM setup instead of Board.
 AIL1_SERVO_PIN = 15
 
-AIL1_INPUT_PIN = 23
+AIL1_INPUT_PIN = 21
 
 
 def main() -> None:
@@ -15,8 +15,8 @@ def main() -> None:
         pi = pigpio.pi()
         
         ail1 = Servo(pi, name="Aileron 1", pin=AIL1_SERVO_PIN)
-            
-        Input(pi, name="Aileron 1", pin=AIL1_INPUT_PIN)
+                    
+        Input(pi, name="Aileron 1", pin=AIL1_INPUT_PIN, servo=ail1)
         
         input("Program running... Press ENTER to stop ")
         

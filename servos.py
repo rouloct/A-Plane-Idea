@@ -26,36 +26,40 @@ class Servo:
         else:
             print(f"{self} initialized on pin {pin}.")
             self._pin = pin
-            self.set_servo_angle(0)
+            self.set_servo_value(value=0, is_angle=True)
             
     
-    def set_servo_angle(self, angle: int) -> None:
-        """ Set the servo's angle (-90 for left, 0 for middle, 90 for right), if valid.
+    def set_servo_value(self, value: int, is_angle: bool) -> None:
+        """ Set the servo's pulsewidth
 
         Args:
-            angle (int): The angle between -90 and 90.
+            value (int): The value (pulsewidth or angle)
+            is_angle (bool): the value is an angle if True, otherwise it is a pulsewidth
         """
         
+        if is_angle:
+            pw_min = 500
+            pw_max = 2500
+            angle_min = -90
+            angle_max = 90
+                
+            pulse_width = (value - angle_min) * (pw_max - pw_min) / (angle_max - angle_min) + pw_min
+        else:
+            pulse_width = value
+    
         if self._pin is None:
-            print(f"Error: Cannot set angle on {self} - No pin found.")
+            print(f"Error: Cannot set value on {self} - No pin found.")
             return
         
-        if type(angle) is not int or not (-90 <= angle <= 90):
-            print(f"Error: Cannot set angle on {self} - Invalid angle: {angle}")
+        if type(value) is not int or not (500 <= pulse_width <= 2500):
+            print(f"Error: Cannot set value on {self} - Invalid value: {value}")
             return
 
-        pw_min = 500
-        pw_max = 2500
-        angle_min = -90
-        angle_max = 90
-            
-        pulse_width = (angle - angle_min) * (pw_max - pw_min) / (angle_max - angle_min) + pw_min
-            
         try:
             self._pi.set_servo_pulsewidth(user_gpio=self._pin, pulsewidth=pulse_width)
-            print(f"Setting {self} to {angle} degrees via pulse width of {pulse_width:.0f}us.")
+            print(f"Sending {self} pulse width of {pulse_width:.0f}us.")
         except pigpio.error:
-            print(f"Error: Setting {self} to {angle} degrees via pulse width of {pulse_width:.0f}us failed - Unknown error.")
+            print(f"Error: Sending {self} pulse width of {pulse_width:.0f}us failed - Unknown error.")
 
 
     def __str__(self) -> str:

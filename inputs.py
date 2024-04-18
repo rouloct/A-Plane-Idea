@@ -50,9 +50,9 @@ class Input:
             self._manage_servo(pulse_width)
             
             
-    def _manage_servo(pulse_width: int) -> None:
-        # TODO
-        pass
+    def _manage_servo(self, pulse_width: int) -> None:
+        if self._servo:
+            self._servo.set_servo_value(value=pulse_width, is_angle=False)
     
         
     def __str__(self) -> str:
