@@ -12,19 +12,16 @@ ELE_INPUT_PIN = 16
 
 
 def main() -> None:
-    
     try:
-        pi = pigpio.pi()
+        pi = pigpio.pi() # Setup pi
         
-        aileron = Servo(pi, name="Aileron", pin=AIL_SERVO_PIN)
-                    
-        Input(pi, name="Aileron", pin=AIL_INPUT_PIN, servo=aileron)
+        aileron = Servo(pi, name="Aileron", pin=AIL_SERVO_PIN) # Set output for aileron PWM.
+        Input(pi, name="Aileron", pin=AIL_INPUT_PIN, servo=aileron) # Set input for aileron PWM.
         
-        elevator = Servo(pi, name="Elevator", pin=ELE_SERVO_PIN)
+        elevator = Servo(pi, name="Elevator", pin=ELE_SERVO_PIN) # Set output for elevator PWM.
+        Input(pi, name="Elevator", pin=ELE_INPUT_PIN, servo=elevator) # Set input for elevator PWM.
         
-        Input(pi, name="Elevator", pin=ELE_INPUT_PIN, servo=elevator)
-        
-        input("Program running... Press ENTER to stop ")
+        input("Program running... Press ENTER to stop ") # Keep the program running.
         
     except KeyboardInterrupt:
         print("\nKeyboard interrupt detected. ", end='')
@@ -34,9 +31,7 @@ def main() -> None:
         
     finally:
         print("Exiting program.")
- 
-        pi.stop()
-        exit()
+        pi.stop() # Cleanup.
 
 
 if __name__ == '__main__':
