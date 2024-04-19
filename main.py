@@ -1,7 +1,7 @@
 import pigpio
 import traceback
-from signal_output import SignalOutput
-from signal_input import SignalInput
+from signal_output import OutputManager
+from signal_input import InputManager
 
 # Add pin numbers here. Pigpio uses BCM setup instead of Board.
 AIL_SERVO_PIN = 15
@@ -20,8 +20,10 @@ def main() -> None:
         
         # elevator = Servo(pi, name="Elevator", pin=ELE_SERVO_PIN) # Set output for elevator PWM.
         # Input(pi, name="Elevator", pin=ELE_INPUT_PIN, channel=2, servo=elevator) # Set input for elevator PWM.
+        om = OutputManager(pi=pi)
+        im = InputManager(pi=pi, output_manager=om)
         
-        SignalInput(pi, name="SF", channel=4, pin=21, error_threshold=20)
+        im.add_input("Aileron", 1, 21, 0)
         
         input("Program running... Press ENTER to stop\n") # Keep the program running.
         

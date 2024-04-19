@@ -4,76 +4,156 @@ import pigpio
 class SignalOutput:
     
     
-    def __init__(self, pi: pigpio.pi, *, name: str = None, pin: int = None) -> None:
-        """ Initialize a servo.
+    def __init__(self, name: str, pin: int) -> None:
+        self.name = name
+        self.pin = pin
+    
+
+    def __str__(self) -> str:
+        return f"SignalOutput [{self.name}, Pin {self.pin}]"
+
+
+
+
+class OutputManager:
+    
+    __PW_MIN = 500
+    __PW_MAX = 2500
+    __ANGLE_MIN = -90
+    __ANGLE_MAX = 90
+    
+    
+    def __init__(self, pi: pigpio.pi ) -> None:
+        """ A class to manage SignalOutputs. Should be a Singleton.
 
         Args:
-            pi (pigpio.pi): The pi to connect to.
-            name (str, optional): The signal output's name (used for print statements). Defaults to None.
-            pin (int, optional): The signal output's pin between 1 and 31 using BCM. Defaults to None.
+            pi (pigpio.pi): The pi.
         """
         
         self._pi = pi
-        self.name = name
-        self._pin = pin
+        self._outputs: list[SignalOutput] = []
         
-        if pin is None or type(pin) is not int or not (1 <= pin <= 31):
-            print(pin)
-            print(f"Error: {self} initialization failed - Invalid pin: {pin}")
-            return
-
-        try:
-            # Set pin's mode to output
-            pi.set_mode(gpio=pin, mode=pigpio.OUTPUT) 
-        except pigpio.error:
-            print(f"Error: {self} initialization failed - Unknown error.")
-        else:
-            print(f"{self} initialized.")
-            self._pin = pin
-            # Set pin's angle to center.
-            self.set_servo_value(value=0, is_angle=True)
-            
     
-    def set_servo_value(self, value: int, is_angle: bool) -> None:
-        """ Set the servo's pulsewidth
+    def add_output(self, name: str, pin: int) -> None:
+        """ Create a SignalOutput. No duplicate names or pins.
 
         Args:
-            value (int): Pulsewidth in microseconds or angle in degrees
-            is_angle (bool): the value is an angle if True, else pulsewidth
+            name (str): The name of the output.
+            pin (int): The pin (BWM) of the output.
         """
         
-        if is_angle:
-            pw_min = 500
-            pw_max = 2500
-            angle_min = -90
-            angle_max = 90
-                
-            pulse_width = (value - angle_min) * (pw_max - pw_min) / (angle_max - angle_min) + pw_min
+        errors = []
+        
+        if type(name) is not str:
+            errors.append(f"Invalid SignalOutput name type: {type(name)}, name: {name}")
+        elif any(output.name == name for output in self._outputs):
+            errors.append(f"Duplicate SignalOutput name: {name}")
+            
+        if type(pin) is not int:
+            errors.append(f"Invalid SignalOutput pin type: {type(pin)}, pin: {pin}")
+        elif pin < 1 or pin > 31:
+            errors.append(f"Invalid SignalOutput pin value: {pin}")
+        elif any(output.pin == pin for output in self._outputs):
+            errors.append(f"Duplicate SignalOutput pin: {pin}")
+            
+        if len(errors) > 0:
+            print("ERROR: SignalOutput failed to initialize with the following errors-- ", end='')
+            print(*errors, sep=' | ', end='.\n')
+            
+        try:
+            output = SignalOutput(name=name, pin=pin)
+            self._pi.set_mode(gpio=pin, mode=pigpio.OUTPUT)
+        except pigpio.error:
+            print(f"ERROR: {output} failed to intialize with unknown exception.")
         else:
-            pulse_width = value
+            self._outputs.append(output)
+            print(f"{output} initialized successfully.")
+            # Set angle to center.
+            
+            
+    def set_output_angle_by_name(self, name: str, angle: int) -> None:
+        """ Change a SignalOutput's pulsewidth using its name and angle.
+
+        Args:
+            name (str): The SignalOutput's name.
+            angle (int): The angle (in degrees).
+        """
+        
+        pin = next((output.pin for output in self._outputs if output.name == name), None)
+        if pin is None:
+            print(f'ERROR: Could not set SignalOutput pulsewidth-- No SignalOutput with name {name}')
+        else:
+            pulsewidth = self._angle_to_puleswidth(angle=angle)
+            self.set_output_pulsewidth_by_pin(pin=pin, pulsewidth=pulsewidth)
+        
     
-        if self._pin is None:
-            print(f"Error: Cannot set value on {self} - No pin found.")
+    def set_output_angle_by_pin(self, pin: int, angle: int) -> None:
+        """ Change a SignalOutput's pulsewidth using its pin and angle.
+
+        Args:
+            pin (int): The SignalOutput's pin.
+            angle (int): The angle (in degrees).
+        """
+        
+        if not any(output.pin == pin for output in self._outputs):
+            print(f"ERROR: Could not set SignalOutput pulsewidth-- No SignalOutput with pin {pin}")
+        else:
+            pulsewidth = self._angle_to_puleswidth(angle=angle)
+            self.set_output_pulsewidth_by_pin(pin=pin, pulsewidth=pulsewidth)
+    
+    
+    def set_output_pulsewidth_by_name(self, name: str, pulsewidth: int) -> None:
+        """ Change a SignalOutput's pulsewidth using its name.
+
+        Args:
+            name (str): The SignalOutput's name
+            pulsewidth (int): The pulsewidth (in microseconds).
+        """
+        
+        pin = next((output.pin for output in self._outputs if output.name == name), None)
+        if pin is None:
+            print(f'ERROR: Could not set SignalOutput pulsewidth-- No SignalOutput with name "{name}"')
+        else:
+            self.set_output_pulsewidth_by_pin(pin=pin, pulsewidth=pulsewidth)
+    
+    
+    def set_output_pulsewidth_by_pin(self, pin: int, pulsewidth: int) -> None:
+        """ Change a SignalOutput's pulsewidth using its pin.
+
+        Args:
+            pin (int): The SignalOutput's pin.
+            pulsewidth (int): The pulsewidth (in microseconds).
+        """
+        
+        output = next((output for output in self._outputs if output.pin == pin), None)
+        if output is None:
+            print(f"ERROR: Could not set SignalOutput pulsewidth-- No SignalOutput with pin {pin}")
+        elif type(pulsewidth) is not int or not (self.__PW_MIN <= pulsewidth <= self.__PW_MAX):
+            print(f"ERROR: Could not set {output} pulsewidth-- Invalid pulsewidth of {pulsewidth}")
             return
         
-        if type(value) is not int or not (500 <= pulse_width <= 2500):
-            print(f"Error: Cannot set value on {self} - Invalid value: {value}")
-            return
-
         try:
-            self._pi.set_servo_pulsewidth(user_gpio=self._pin, pulsewidth=pulse_width)
-            print(f"Sending {self} pulse width of {pulse_width:.0f}us.")
+            self._pi.set_servo_pulsewidth(user_gpio=pin, pulsewidth=pulsewidth)
+            print(f"Sending {output} pulse width of {pulsewidth:.0f}us.")
         except pigpio.error:
-            print(f"Error: Sending {self} pulse width of {pulse_width:.0f}us failed - Unknown error.")
+            print(f"ERROR: Sending {output} pulse width of {pulsewidth:.0f}us failed - Unknown error.")
+            
+    
+    
+    def _angle_to_puleswidth(self, angle: int) -> int:
+        """ Convert an angle to a pulsewidth between 500 and 2500.
 
-
-    def __str__(self) -> str:
-        desc = ""
-        if self.name:
-            desc += f'"{self.name}"'
-        if self._pin:
-            comma = ", " if desc else ""
-            desc += f"{comma}Pin {self._pin}"
-        if not desc:
-            desc = "Unknown"
-        return f"Output [{desc}]"
+        Args:
+            angle (int): The angle. If not in [-90,90], set to the nearest endpoint.
+        """
+        
+        
+        if type(angle) is not int:
+            angle = 0
+        elif angle < self.__ANGLE_MIN:
+            angle = self.__ANGLE_MIN
+        elif angle > self.__ANGLE_MAX:
+            angle = self.__ANGLE_MAX
+            
+        return (angle - self.__ANGLE_MIN) * (self.__PW_MAX - self.__PW_MIN) / (self.__ANGLE_MAX - self.__ANGLE_MIN) + self.__PW_MIN
+        
