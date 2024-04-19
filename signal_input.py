@@ -53,7 +53,6 @@ class InputManager:
         elif any(input.name == name for input in self._inputs):
             errors.append(f"Duplicate SignalInput name: {name}")
             
-            
         if type(channel) is not int:
             errors.append(f"Invalid SignalInput channel type: {type(channel)}, channel: {channel}")
         elif any(input.channel == channel for input in self._inputs):
@@ -102,7 +101,7 @@ class InputManager:
         
         pulsewidth = tick - input.start_tick
         
-        if input.last_pulsewidth is None or abs(pulsewidth - input.last_pulsewidth) > input.error_threshold:
+        if input.last_pulsewidth is None and abs(pulsewidth - input.last_pulsewidth) > input.error_threshold:
             self._last_pulse_width = pulsewidth
             self._manage_pulsewidth(input=input, pulsewidth=pulsewidth)
             
