@@ -4,19 +4,17 @@ import pigpio
 class SignalOutput:
     
     
-    def __init__(self, pi: pigpio.pi, *, name: str = None, channel: int = -1, pin: int = None) -> None:
+    def __init__(self, pi: pigpio.pi, *, name: str = None, pin: int = None) -> None:
         """ Initialize a servo.
 
         Args:
             pi (pigpio.pi): The pi to connect to.
             name (str, optional): The signal output's name (used for print statements). Defaults to None.
-            channel (int, optional): The signal output's channel (used for print statements). Defaults to None.
             pin (int, optional): The signal output's pin between 1 and 31 using BCM. Defaults to None.
         """
         
         self._pi = pi
         self.name = name
-        self.channel = channel
         self._pin = pin
         
         if pin is None or type(pin) is not int or not (1 <= pin <= 31):
@@ -73,9 +71,6 @@ class SignalOutput:
         desc = ""
         if self.name:
             desc += f'"{self.name}"'
-        if self.channel:
-            comma = ", " if desc else ""
-            desc += f"{comma}Channel {self.channel}" 
         if self._pin:
             comma = ", " if desc else ""
             desc += f"{comma}Pin {self._pin}"

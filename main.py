@@ -16,10 +16,10 @@ def main() -> None:
         pi = pigpio.pi() # Setup pi
         
         # aileron = Servo(pi, name="Aileron", pin=AIL_SERVO_PIN) # Set output for aileron PWM.
-        # Input(pi, name="Aileron", pin=AIL_INPUT_PIN, servo=aileron) # Set input for aileron PWM.
+        # Input(pi, name="Aileron", pin=AIL_INPUT_PIN, channel=1, servo=aileron) # Set input for aileron PWM.
         
         # elevator = Servo(pi, name="Elevator", pin=ELE_SERVO_PIN) # Set output for elevator PWM.
-        # Input(pi, name="Elevator", pin=ELE_INPUT_PIN, servo=elevator) # Set input for elevator PWM.
+        # Input(pi, name="Elevator", pin=ELE_INPUT_PIN, channel=2, servo=elevator) # Set input for elevator PWM.
         
         SignalInput(pi, name="SF", channel=4, pin=21, error_threshold=20)
         
