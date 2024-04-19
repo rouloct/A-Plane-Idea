@@ -11,6 +11,10 @@ This project explores the use of a Raspberry Pi as the flight controller for a c
 6. Detach screen with `CTRL+A` then `CTRL+D`.
 7. Disconnect the SSH connection: If in VSCode, close window. If in terminal, type `exit`.
 
+**Quitting the Screen**
+1. Type `screen -ls` to see a list of screens. Take note of the screen's pid, the numbers at the start. ex) for `4510.pts-0.raspberrypi` the pid is 4510.
+2. Type `screen -X -S (pid) quit` where `(pid)` is the screen's pid.
+
 **Current Capabilities**
 
 * Real-time input processing from the RC receiver.
