@@ -1,7 +1,7 @@
 import pigpio
 import traceback
-from servos import Servo
-from inputs import Input
+from signal_output import SignalOutput
+from signal_input import SignalInput
 
 # Add pin numbers here. Pigpio uses BCM setup instead of Board.
 AIL_SERVO_PIN = 15
@@ -15,13 +15,15 @@ def main() -> None:
     try:
         pi = pigpio.pi() # Setup pi
         
-        aileron = Servo(pi, name="Aileron", pin=AIL_SERVO_PIN) # Set output for aileron PWM.
-        Input(pi, name="Aileron", pin=AIL_INPUT_PIN, servo=aileron) # Set input for aileron PWM.
+        # aileron = Servo(pi, name="Aileron", pin=AIL_SERVO_PIN) # Set output for aileron PWM.
+        # Input(pi, name="Aileron", pin=AIL_INPUT_PIN, servo=aileron) # Set input for aileron PWM.
         
-        elevator = Servo(pi, name="Elevator", pin=ELE_SERVO_PIN) # Set output for elevator PWM.
-        Input(pi, name="Elevator", pin=ELE_INPUT_PIN, servo=elevator) # Set input for elevator PWM.
+        # elevator = Servo(pi, name="Elevator", pin=ELE_SERVO_PIN) # Set output for elevator PWM.
+        # Input(pi, name="Elevator", pin=ELE_INPUT_PIN, servo=elevator) # Set input for elevator PWM.
         
-        input("Program running... Press ENTER to stop ") # Keep the program running.
+        SignalInput(pi, name="SF", channel=4, pin=21, error_threshold=20)
+        
+        input("Program running... Press ENTER to stop\n") # Keep the program running.
         
     except KeyboardInterrupt:
         print("\nKeyboard interrupt detected. ", end='')

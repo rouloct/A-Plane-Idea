@@ -1,18 +1,23 @@
 import pigpio
 
-class Servo:
-    def __init__(self, pi: pigpio.pi, *, name: str = None, pin: int = None) -> None:
+
+class SignalOutput:
+    
+    
+    def __init__(self, pi: pigpio.pi, *, name: str = None, channel: int = -1, pin: int = None) -> None:
         """ Initialize a servo.
 
         Args:
             pi (pigpio.pi): The pi to connect to.
-            name (str, optional): The servo's name (used for print statements). Defaults to None.
-            pin (int, optional): The servo's pin between 1 and 31 using BCM. Defaults to None.
+            name (str, optional): The signal output's name (used for print statements). Defaults to None.
+            channel (int, optional): The signal output's channel (used for print statements). Defaults to None.
+            pin (int, optional): The signal output's pin between 1 and 31 using BCM. Defaults to None.
         """
         
         self._pi = pi
-        self.name = name if name is not None else "Unnamed"
-        self._pin = None
+        self.name = name
+        self.channel = channel
+        self._pin = pin
         
         if pin is None or type(pin) is not int or not (1 <= pin <= 31):
             print(pin)
@@ -23,9 +28,9 @@ class Servo:
             # Set pin's mode to output
             pi.set_mode(gpio=pin, mode=pigpio.OUTPUT) 
         except pigpio.error:
-            print(f"Error: {self} initialization to pin {pin} failed - Unknown error.")
+            print(f"Error: {self} initialization failed - Unknown error.")
         else:
-            print(f"{self} initialized on pin {pin}.")
+            print(f"{self} initialized.")
             self._pin = pin
             # Set pin's angle to center.
             self.set_servo_value(value=0, is_angle=True)
@@ -35,8 +40,8 @@ class Servo:
         """ Set the servo's pulsewidth
 
         Args:
-            value (int): The value (pulsewidth or angle)
-            is_angle (bool): the value is an angle if True, otherwise it is a pulsewidth
+            value (int): Pulsewidth in microseconds or angle in degrees
+            is_angle (bool): the value is an angle if True, else pulsewidth
         """
         
         if is_angle:
@@ -65,4 +70,15 @@ class Servo:
 
 
     def __str__(self) -> str:
-        return f"Servo [{self.name}, {self._pin}]" if self._pin is not None else f"Servo [{self.name}]"
+        desc = ""
+        if self.name:
+            desc += f'"{self.name}"'
+        if self.channel:
+            comma = ", " if desc else ""
+            desc += f"{comma}Channel {self.channel}" 
+        if self._pin:
+            comma = ", " if desc else ""
+            desc += f"{comma}Pin {self._pin}"
+        if not desc:
+            desc = "Unknown"
+        return f"Output [{desc}]"
