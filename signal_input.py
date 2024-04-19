@@ -101,7 +101,7 @@ class InputManager:
         
         pulsewidth = tick - input.start_tick
         
-        if input.last_pulsewidth is None and abs(pulsewidth - input.last_pulsewidth) > input.error_threshold:
+        if input.last_pulsewidth is not None and abs(pulsewidth - input.last_pulsewidth) > input.error_threshold:
             self._last_pulse_width = pulsewidth
             self._manage_pulsewidth(input=input, pulsewidth=pulsewidth)
             
