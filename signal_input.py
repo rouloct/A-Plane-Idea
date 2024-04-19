@@ -12,12 +12,10 @@ class SignalInput:
         self.error_threshold = error_threshold if error_threshold >= 0 else 0
         self.start_tick = None
         self.last_pulsewidth = None
-    
+            
     
     def __str__(self) -> str:
         return f"SignalInput [{self.name}, Channel {self.channel}, Pin {self.pin}]"
-    
-    
     
     
 class InputManager:
@@ -32,7 +30,10 @@ class InputManager:
         
         self._pi = pi
         self._output_manager = output_manager
+        self._stopped = False # Emergency stop.
         self._inputs: list[SignalInput] = []
+        
+        print(f"\n*** EMERGENCY STOP *** \n Disabled.\n")
         
     
     def add_input(self, name: str, channel: int, pin: int, error_threshold: int = 0):
@@ -102,8 +103,32 @@ class InputManager:
         pulsewidth = tick - input.start_tick
         
         if input.last_pulsewidth is None or abs(pulsewidth - input.last_pulsewidth) > input.error_threshold:
-            print(f"Pulse width {pulsewidth}us received on {input}. Sending pulsewidth to OutputManager")
             self._last_pulse_width = pulsewidth
-            # Handle custom implemenetation for keyword names.
-            self._output_manager.set_output_pulsewidth_by_name(name=input.name, pulsewidth=pulsewidth)
+            self._manage_pulsewidth(input=input, pulsewidth=pulsewidth)
             
+            
+    def _manage_pulsewidth(self, input: SignalInput, pulsewidth: int) -> None:
+        """ Called when receiving a valid pulsewidth in _input_callback. 
+
+        Args:
+            input (SignalInput): The SignalInput receiving the signal.
+            pulsewidth (int): The pulsewidth received.
+        """
+                
+        if input.name == "EMERGENCY_STOP":
+            if self._stopped and pulsewidth < 1200:
+                self._stopped = False
+                print(f"Pulse width {pulsewidth}us received on {input}... ")
+                print(f"\n*** EMERGENCY STOP *** \n Disabled.\n")
+                
+            elif not self._stopped and pulsewidth > 1200:
+                self._stopped = True
+                print(f"Pulse width {pulsewidth}us received on {input}... ")
+                print(f"\n*** EMERGENCY STOP *** \n Enabled.\n")
+                
+        elif self._stopped is True:
+            return
+        
+        else:
+            print(f"Pulse width {pulsewidth}us received on {input}... ")
+            self._output_manager.set_output_pulsewidth_by_name(name=input.name, pulsewidth=pulsewidth)

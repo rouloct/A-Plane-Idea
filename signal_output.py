@@ -13,8 +13,6 @@ class SignalOutput:
         return f"SignalOutput [{self.name}, Pin {self.pin}]"
 
 
-
-
 class OutputManager:
     
     __PW_MIN = 500
@@ -68,7 +66,7 @@ class OutputManager:
         else:
             self._outputs.append(output)
             print(f"{output} initialized successfully.")
-            # Set angle to center.
+            self.set_output_angle_by_pin(pin=pin, angle=0)
             
             
     def set_output_angle_by_name(self, name: str, angle: int) -> None:
