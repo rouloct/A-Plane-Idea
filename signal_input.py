@@ -39,7 +39,7 @@ class InputManager:
         """ Create a SignalInput. No duplicate names, channels, or pins.
 
         Args:
-            name (str): The name of the input.
+            name (str): The name of the input. Some names have special functions when their input is triggered (switches).
             channel (int): The channel of the input.
             pin (int): The pin of the input.
             error_threshold (int, optional): The pulsewidth error threshold for the input's response. Defaults to 0.
@@ -104,5 +104,6 @@ class InputManager:
         if input.last_pulsewidth is None or abs(pulsewidth - input.last_pulsewidth) > input.error_threshold:
             print(f"Pulse width {pulsewidth}us received on {input}. Sending pulsewidth to OutputManager")
             self._last_pulse_width = pulsewidth
-            self._output_manager.set_output_pulsewidth_by_pin(pin=input.pin, pulsewidth=pulsewidth)
+            # Handle custom implemenetation for keyword names.
+            self._output_manager.set_output_pulsewidth_by_name(name=input.name, pulsewidth=pulsewidth)
             
