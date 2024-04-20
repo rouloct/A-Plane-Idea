@@ -3,12 +3,12 @@
 This project explores the use of a Raspberry Pi as the flight controller for a custom-built RC plane. It's a final project for CS 2100 (Computer Organization).
 
 **Running the Program**
-1. Navigate to appropriate directory.
-2. Run `sudo pigpiod` in terminal.
-3. Type `screen` into terminal.
+1. Navigate to appropriate directory and open a terminal.
+2. Type `sudo pigpiod` to run the pigpio daemon.
+3. Type `screen` to create a new screen.
 4. Hit `ENTER` to enter screen.
-5. Run main.py with `python3 main.py` or `py main.py`.
-6. Detach screen with `CTRL`+`A` then `CTRL`+`D`.
+5. Type `python3 main.py` or `py main.py` to run the program.
+6. Press `CTRL`+`A` then `CTRL`+`D` to disconnect the screen.
 7. Disconnect the SSH connection: If in VSCode, close window. If in terminal, type `exit`.
 
 **Quitting the Screen from Inside the Session**
