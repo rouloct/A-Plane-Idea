@@ -126,7 +126,7 @@ class OutputManager:
         output = next((output for output in self._outputs if output.pin == pin), None)
         if output is None:
             print(f"ERROR: Could not set SignalOutput pulsewidth-- No SignalOutput with pin {pin}")
-        elif type(pulsewidth) is not int or not (self.__PW_MIN <= pulsewidth <= self.__PW_MAX):
+        elif (type(pulsewidth) is not float and type(pulsewidth) is not int) or not (self.__PW_MIN <= pulsewidth <= self.__PW_MAX):
             print(f"ERROR: Could not set {output} pulsewidth-- Invalid pulsewidth of {pulsewidth}")
             return
         
