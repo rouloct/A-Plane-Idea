@@ -20,17 +20,5 @@ This project explores the use of a Raspberry Pi as the flight controller for a c
 1. Type `screen -ls` to see a list of screens. Take note of the screen's pid: for `4510.pts-0.raspberrypi` the pid is 4510.
 2. Type `screen -X -S (pid) quit` where `(pid)` is the screen's pid to force quit the screen.
 
-**Current Capabilities**
-
-* Real-time input processing from the RC receiver.
-* Direct servo control based on receiver commands.
-* Switch-based control logic for the RC transmitter.
-
-**Work in Progress**
-
-* Airframe construction and assembly.
-
-**Project Completion**
-
-* Targeted completion date: April 25th.
-* A demo video will showcase the final project in action.
+**Presentation**  
+[https://docs.google.com/presentation/d/1hiCboXv1AIqShtnhkoB7q91nwMJbQwPUNCncO6HIbKM](https://docs.google.com/presentation/d/1hiCboXv1AIqShtnhkoB7q91nwMJbQwPUNCncO6HIbKM)
